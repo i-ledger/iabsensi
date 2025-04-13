@@ -1,1 +1,107 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daftar Admin PT</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f3f3;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+    h2 {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      background-color: #1976d2;
+      color: white;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #125a9c;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Daftar Admin PT</h2>
+    <input type="text" id="namaPT" placeholder="Nama PT" required>
+    <input type="email" id="email" placeholder="Email" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <button onclick="daftarAdmin()">Daftar</button>
+
+    <div id="konfirmasi" class="hidden">
+      <p><strong>Silakan transfer ke rekening:</strong></p>
+      <p>Bank ABC - 1234567890 - a.n. Nama Kamu</p>
+      <p>Nominal: <strong>Rp100.000</strong></p>
+      <p>Setelah transfer, klik tombol berikut:</p>
+      <button onclick="sudahTransfer()">Saya sudah transfer</button>
+    </div>
+  </div>
+
+  <script>
+    let dataAdmin = {};
+
+    function daftarAdmin() {
+      const namaPT = document.getElementById("namaPT").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      if (!namaPT || !email || !password) {
+        alert("Mohon lengkapi semua data");
+        return;
+      }
+
+      dataAdmin = { namaPT, email, password, status: "pending" };
+
+      document.getElementById("konfirmasi").classList.remove("hidden");
+    }
+
+    function sudahTransfer() {
+      // Simpan data ke Google Sheet melalui Apps Script
+      fetch("https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec", {
+        method: "POST",
+        body: JSON.stringify(dataAdmin),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+      .then(res => res.text())
+      .then(txt => {
+        alert("Pendaftaran berhasil! Menunggu verifikasi.");
+        window.location.href = "login.html";
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Terjadi kesalahan saat menyimpan data.");
+      });
+    }
+  </script>
+</body>
+</html>
 
