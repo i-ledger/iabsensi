@@ -77,6 +77,12 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+
+    #loginBtn {
+      display: none;
+      margin-top: 1rem;
+      background-color: #e63946;
+    }
   </style>
 </head>
 <body>
@@ -92,6 +98,7 @@
     </form>
     <div class="spinner" id="spinner"></div>
     <div id="status"></div>
+    <button id="loginBtn" onclick="window.location.href='login.html'">Login Sekarang</button>
   </div>
 
   <script>
@@ -100,8 +107,10 @@
 
       const spinner = document.getElementById("spinner");
       const statusDiv = document.getElementById("status");
+      const loginBtn = document.getElementById("loginBtn");
       spinner.style.display = "block";
       statusDiv.innerText = "";
+      loginBtn.style.display = "none";
 
       const formData = new FormData(this);
       const params = new URLSearchParams();
@@ -125,7 +134,17 @@
 
         try {
           const result = JSON.parse(text);
-          statusDiv.innerText = result.message;
+          if (result.success) {
+            statusDiv.innerHTML = `
+              <p style="color:green;">Pendaftaran berhasil!</p>
+              <p>Silakan transfer ke rekening berikut untuk aktivasi:</p>
+              <strong>1234567890 - Bank ABC a.n. PT Contoh</strong>
+            `;
+            loginBtn.style.display = "block";
+            document.getElementById("registerForm").reset();
+          } else {
+            statusDiv.innerHTML = `<span style="color:red;">${result.message}</span>`;
+          }
         } catch (e) {
           statusDiv.innerText = "Gagal membaca respons: " + text;
         }
