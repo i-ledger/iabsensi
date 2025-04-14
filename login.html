@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Login Admin</title>
+</head>
+<body>
+  <h2>Login Admin</h2>
+  <form id="loginForm">
+    <input type="email" name="email" placeholder="Email Admin" required><br><br>
+    <button type="submit">Login</button>
+  </form>
+  <div id="status"></div>
+
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const email = this.email.value;
+
+      fetch(`https://script.google.com/macros/s/AKfycbzkmTAvkL4OA0-Z3i4ZNO62cU8vVDIGL1MZ0Pz1FPbgbnCB4fTeojtBmo4mc3DfQBBnyw/exec?email=${encodeURIComponent(email)}`)
+        .then(res => res.json())
+        .then(result => {
+          if (result.success && result.status === "aktif") {
+            localStorage.setItem("adminEmail", email);
+            window.location.href = "dashboard.html";
+          } else if (result.status === "expired") {
+            document.getElementById("status").innerText = "Akun Anda sudah expired. Silakan perpanjang.";
+          } else {
+            document.getElementById("status").innerText = result.message;
+          }
+        })
+        .catch(err => {
+          document.getElementById("status").innerText = "Terjadi kesalahan: " + err.message;
+        });
+    });
+  </script>
+</body>
+</html>
