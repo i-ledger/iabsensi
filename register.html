@@ -21,20 +21,16 @@
       e.preventDefault();
 
       const formData = new FormData(this);
-      const data = {
-        action: "register",
-        nama: formData.get("nama"),
-        email: formData.get("email"),
-        perusahaan: formData.get("perusahaan"),
-        rekening: formData.get("rekening")
-      };
+      const params = new URLSearchParams();
+      params.append("action", "register");
+      params.append("nama", formData.get("nama"));
+      params.append("email", formData.get("email"));
+      params.append("perusahaan", formData.get("perusahaan"));
+      params.append("rekening", formData.get("rekening"));
 
-      fetch("https://script.google.com/macros/s/AKfycbzkmTAvkL4OA0-Z3i4ZNO62cU8vVDIGL1MZ0Pz1FPbgbnCB4fTeojtBmo4mc3DfQBBnyw/exec", {
+      fetch("https://script.google.com/macros/s/AKfycbxvkdhHAPv0cAi4D2QEeqyCl0zYWL3QV7v-H4MgTm-ZbUov7PtmHI5rLncKiPcvw60KDg/exec", {
         method: "POST",
-        body: JSON.stringify(data),
-        headers: {
-          "Content-Type": "application/json"
-        }
+        body: params
       })
       .then(res => res.json())
       .then(result => {
