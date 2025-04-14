@@ -6,7 +6,6 @@
 </head>
 <body>
   <h2>Dashboard Admin</h2>
-
   <div id="dashboardInfo"></div>
 
   <script>
@@ -15,14 +14,20 @@
     const email = urlParams.get('email');
 
     if (email) {
-      // Fetch request untuk mendapatkan info admin dari email
-      fetch("https://script.google.com/macros/s/AKfycby49racBkClV3xOVv1tfxKS4vojCjiImeFetm-qYByVSvwV3klUXHAOjtpd5QPxAjEvyw/exec?email=" + encodeURIComponent(email))
+      // Membuat URL request untuk mendapatkan status akun admin dari Google Apps Script
+      const apiUrl = `https://script.google.com/macros/s/AKfycby49racBkClV3xOVv1tfxKS4vojCjiImeFetm-qYByVSvwV3klUXHAOjtpd5QPxAjEvyw/exec?email=${encodeURIComponent(email)}`;
+
+      fetch(apiUrl)
         .then(res => res.json())
         .then(result => {
-          if (result.success && result.status === "aktif") {
-            document.getElementById("dashboardInfo").innerText = "Selamat datang, " + email + ". Status akun Anda aktif!";
+          if (result.success) {
+            if (result.status === "aktif") {
+              document.getElementById("dashboardInfo").innerText = `Selamat datang, ${email}. Status akun Anda aktif!`;
+            } else {
+              document.getElementById("dashboardInfo").innerText = "Akun Anda sudah expired.";
+            }
           } else {
-            document.getElementById("dashboardInfo").innerText = "Akun Anda sudah expired.";
+            document.getElementById("dashboardInfo").innerText = result.message || "Terjadi kesalahan.";
           }
         })
         .catch(err => {
