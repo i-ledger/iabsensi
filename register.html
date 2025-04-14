@@ -1,98 +1,85 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Daftar Admin PT</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f1f1f1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    form {
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      width: 100%;
-      max-width: 400px;
-    }
-    h2 {
-      text-align: center;
-      color: #1976d2;
-    }
-    input {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      margin-bottom: 20px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-    button {
-      width: 100%;
-      padding: 10px;
-      background: #1976d2;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .message {
-      text-align: center;
-      margin-top: 20px;
-      color: green;
-    }
-  </style>
-</head>
-<body>
+// Google Apps Script: Verifikasi pembayaran, registrasi admin, dan aktivasi masa aktif
+function doPost(e) {
+  const ss = SpreadsheetApp.openById("ID_SPREADSHEET_KAMU");
+  const sheet = ss.getSheetByName("Admin");
+  const data = JSON.parse(e.postData.contents);
 
-  <form id="registerForm">
-    <h2>Daftar Admin PT</h2>
-    <input type="text" id="pt" placeholder="Nama PT" required />
-    <input type="email" id="email" placeholder="Email Admin" required />
-    <input type="password" id="password" placeholder="Password" required />
-    <button type="submit">Daftar</button>
-    <div class="message" id="message"></div>
-  </form>
+  const email = data.email;
+  const action = data.action;
 
-  <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbxH4MCEioxfCuIxcDluHhTE4VLTlzLHQNfRs-synpnYW7MEf5Bdnl-6CDY3Lk5fg3EjYQ/exec";
+  if (action === "register") {
+    const nama = data.nama;
+    const perusahaan = data.perusahaan;
+    const rekening = data.rekening;
+    const now = new Date();
 
-    document.getElementById("registerForm").addEventListener("submit", e => {
-      e.preventDefault();
+    // Tambah data ke sheet
+    sheet.appendRow([nama, email, perusahaan, rekening, "belum bayar", "", now]);
+    return ContentService.createTextOutput(JSON.stringify({ success: true, message: "Pendaftaran berhasil. Silakan lakukan pembayaran." }))
+          .setMimeType(ContentService.MimeType.JSON);
+  }
 
-      const data = {
-        pt: document.getElementById("pt").value,
-        email: document.getElementById("email").value,
-        password: document.getElementById("password").value,
-      };
+  if (action === "verifyPayment") {
+    const rows = sheet.getDataRange().getValues();
+    const header = rows[0];
+    const emailCol = header.indexOf("Email");
+    const statusCol = header.indexOf("Status");
+    const activatedAtCol = header.indexOf("ActivatedAt");
 
-      fetch(scriptURL, {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: {
-          "Content-Type": "application/json"
-        }
-      })
-      .then(res => res.text())
-      .then(result => {
-        document.getElementById("message").innerHTML = `
-          Terima kasih! Silakan transfer ke rekening berikut:<br><br>
-          <b>BNI 1234567890 a.n. [NAMA KAMU]</b><br><br>
-          Admin akan mengaktifkan akun kamu setelah pembayaran.
-        `;
-      })
-      .catch(err => {
-        document.getElementById("message").innerText = "Gagal mendaftar. Coba lagi nanti.";
-        console.error(err);
-      });
-    });
-  </script>
+    for (let i = 1; i < rows.length; i++) {
+      if (rows[i][emailCol] === email) {
+        const now = new Date();
+        sheet.getRange(i + 1, statusCol + 1).setValue("aktif");
+        sheet.getRange(i + 1, activatedAtCol + 1).setValue(now);
 
-</body>
-</html>
+        return ContentService.createTextOutput(JSON.stringify({ success: true, message: "Akun diaktifkan." }))
+              .setMimeType(ContentService.MimeType.JSON);
+      }
+    }
+
+    return ContentService.createTextOutput(JSON.stringify({ success: false, message: "Email tidak ditemukan." }))
+          .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  return ContentService.createTextOutput(JSON.stringify({ success: false, message: "Aksi tidak dikenal." }))
+        .setMimeType(ContentService.MimeType.JSON);
+}
+
+// Fungsi GET untuk cek status akun dan masa aktif
+function doGet(e) {
+  const ss = SpreadsheetApp.openById("ID_SPREADSHEET_KAMU");
+  const sheet = ss.getSheetByName("Admin");
+
+  const email = e.parameter.email;
+  const rows = sheet.getDataRange().getValues();
+  const header = rows[0];
+  const emailCol = header.indexOf("Email");
+  const statusCol = header.indexOf("Status");
+  const activatedAtCol = header.indexOf("ActivatedAt");
+
+  for (let i = 1; i < rows.length; i++) {
+    if (rows[i][emailCol] === email) {
+      let status = rows[i][statusCol];
+      const activatedAt = new Date(rows[i][activatedAtCol]);
+
+      const now = new Date();
+      const selisihHari = Math.floor((now - activatedAt) / (1000 * 60 * 60 * 24));
+
+      if (selisihHari > 30) {
+        sheet.getRange(i + 1, statusCol + 1).setValue("expired");
+        status = "expired";
+      }
+
+      return ContentService.createTextOutput(JSON.stringify({
+        email: email,
+        status: status,
+        daysActive: selisihHari
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+
+  return ContentService.createTextOutput(JSON.stringify({
+    success: false,
+    message: "Email tidak ditemukan"
+  })).setMimeType(ContentService.MimeType.JSON);
+}
