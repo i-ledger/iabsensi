@@ -6,40 +6,28 @@
   <title>Dashboard Admin</title>
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(to right, #2a9d8f, #264653);
-      color: white;
-      padding: 0;
+      font-family: sans-serif;
+      background-color: #f1f1f1;
       margin: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
+      padding: 0;
     }
 
     .container {
-      background-color: white;
-      color: #333;
-      padding: 2rem;
-      border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      width: 90%;
       max-width: 500px;
-      text-align: center;
+      margin: 3rem auto;
+      padding: 2rem;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
 
     h2 {
-      color: #2a9d8f;
-      margin-bottom: 1.5rem;
+      color: #1d3557;
+      margin-bottom: 1rem;
     }
 
-    .info {
-      margin: 10px 0;
-      text-align: left;
-    }
-
-    .info span {
-      font-weight: bold;
+    p {
+      margin: 0.5rem 0;
     }
 
     .expired {
@@ -47,83 +35,46 @@
       font-weight: bold;
     }
 
-    .active {
+    .aktif {
       color: green;
       font-weight: bold;
-    }
-
-    .buttons {
-      margin-top: 2rem;
-    }
-
-    button {
-      background-color: #2a9d8f;
-      color: white;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 1rem;
-      margin: 0 8px;
-    }
-
-    button:hover {
-      background-color: #21867a;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>Dashboard Admin</h2>
-    <div class="info"><span>Nama:</span> <span id="nama"></span></div>
-    <div class="info"><span>Email:</span> <span id="email"></span></div>
-    <div class="info"><span>Perusahaan:</span> <span id="perusahaan"></span></div>
-    <div class="info"><span>Status:</span> <span id="status"></span></div>
-    <div class="info"><span>Aktif Sejak:</span> <span id="activatedAt"></span></div>
-    <div class="info"><span>Dibuat Pada:</span> <span id="createdAt"></span></div>
-    <div class="info"><span>Sisa Masa Aktif:</span> <span id="sisaHari"></span> hari</div>
-
-    <div class="buttons">
-      <button onclick="logout()">Logout</button>
-      <button onclick="perpanjang()">Perpanjang Sekarang</button>
-    </div>
+    <div id="info"></div>
   </div>
 
   <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const email = urlParams.get("email");
+    const params = new URLSearchParams(window.location.search);
+    const email = params.get("email");
 
     if (!email) {
-      alert("Email tidak ditemukan di URL.");
+      document.getElementById("info").innerText = "Email tidak ditemukan di URL.";
     } else {
-      fetch(`https://script.google.com/macros/s/AKfycbwFjghfhbDOIQv1ZGat1cqP1V0hHtnWsAyLC3lNEtiPWhY2D_Vw8GyFLmvkb3iDEudK4g/exec?email=${encodeURIComponent(email)}`)
+      fetch(`https://script.google.com/macros/s/AKfycbyDeDeUEpP0s1Y8d4Gr3b2u3hSXTNUfEGEpJX3WeHUlj7b0xtoKPhS-mrFhNaUnfHQyqg/exec?action=get_admin_info&email=${email}`)
         .then(res => res.json())
         .then(data => {
           if (data.success) {
-            document.getElementById("nama").innerText = data.nama;
-            document.getElementById("email").innerText = email;
-            document.getElementById("perusahaan").innerText = data.perusahaan;
-            document.getElementById("status").innerHTML = data.status === "expired"
-              ? `<span class="expired">${data.status}</span>`
-              : `<span class="active">${data.status}</span>`;
-            document.getElementById("activatedAt").innerText = data.activatedAt || "-";
-            document.getElementById("createdAt").innerText = data.createdAt || "-";
-            document.getElementById("sisaHari").innerText = data.sisaHari || "0";
+            const { nama, perusahaan, email, status, createdAt, activatedAt, sisaHari } = data;
+            document.getElementById("info").innerHTML = `
+              <p><strong>Nama:</strong> ${nama}</p>
+              <p><strong>Email:</strong> ${email}</p>
+              <p><strong>Perusahaan:</strong> ${perusahaan}</p>
+              <p><strong>Status:</strong> <span class="${status === 'aktif' ? 'aktif' : 'expired'}">${status}</span></p>
+              <p><strong>Dibuat pada:</strong> ${createdAt}</p>
+              <p><strong>Aktif sejak:</strong> ${activatedAt}</p>
+              <p><strong>Sisa hari aktif:</strong> ${sisaHari} hari</p>
+            `;
           } else {
-            alert(data.message);
+            document.getElementById("info").innerText = data.message;
           }
         })
         .catch(err => {
-          alert("Gagal mengambil data: " + err.message);
+          document.getElementById("info").innerText = "Gagal mengambil data: " + err.message;
         });
-    }
-
-    function logout() {
-      window.location.href = "login.html";
-    }
-
-    function perpanjang() {
-      window.location.href = `pembayaran.html?email=${encodeURIComponent(email)}`;
     }
   </script>
 </body>
