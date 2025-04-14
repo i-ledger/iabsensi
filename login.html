@@ -3,28 +3,112 @@
 <head>
   <meta charset="UTF-8">
   <title>Login Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #1d3557, #457b9d);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background-color: white;
+      color: #333;
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 1.5rem;
+      color: #1d3557;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    button {
+      background-color: #1d3557;
+      color: white;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    button:hover {
+      background-color: #457b9d;
+    }
+
+    #status {
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
-  <h2>Login Admin</h2>
-  <form id="loginForm">
-    <input type="email" name="email" placeholder="Email Admin" required><br><br>
-    <button type="submit">Login</button>
-  </form>
-
-  <div id="status"></div>
+  <div class="container">
+    <h2>Login Admin</h2>
+    <form id="loginForm">
+      <input type="email" name="email" placeholder="Email Admin" required>
+      <input type="password" name="password" placeholder="Password" required>
+      <button type="submit">Login</button>
+    </form>
+    <div id="status"></div>
+  </div>
 
   <script>
     document.getElementById("loginForm").addEventListener("submit", function(e) {
       e.preventDefault();
 
       const email = document.querySelector('[name="email"]').value;
+      const password = document.querySelector('[name="password"]').value;
+      const statusDiv = document.getElementById("status");
 
-      if (email) {
-        // Arahkan ke dashboard dengan membawa parameter email
-        window.location.href = `dashboard.html?email=${encodeURIComponent(email)}`;
-      } else {
-        document.getElementById("status").innerText = "Email tidak boleh kosong!";
-      }
+      statusDiv.innerText = "Memeriksa data...";
+
+      const params = new URLSearchParams();
+      params.append("action", "login");
+      params.append("email", email);
+      params.append("password", password);
+
+      fetch("https://script.google.com/macros/s/AKfycbyDeDeUEpP0s1Y8d4Gr3b2u3hSXTNUfEGEpJX3WeHUlj7b0xtoKPhS-mrFhNaUnfHQyqg/exec", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: params.toString()
+      })
+      .then(res => res.json())
+      .then(result => {
+        if (result.success) {
+          statusDiv.innerText = "Login berhasil!";
+          setTimeout(() => {
+            window.location.href = `dashboard.html?email=${encodeURIComponent(email)}`;
+          }, 1000);
+        } else {
+          statusDiv.innerText = "Login gagal: " + result.message;
+        }
+      })
+      .catch(err => {
+        statusDiv.innerText = "Gagal koneksi: " + err.message;
+      });
     });
   </script>
 </body>
