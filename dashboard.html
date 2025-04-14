@@ -18,7 +18,7 @@
       const params = new URLSearchParams();
       params.append("email", email);
 
-      fetch("https://script.google.com/macros/s/AKfycbwkcZUi0lHDqpdGv4pbgPhFBzgjZe241SN6O8EnNDC_jQkk6grXFAfDYewgWNyKpW4mag/exec?" + params.toString())
+      fetch("https://script.google.com/macros/s/AKfycbwJeZWhr3lMV3BWEedmmWqYcO3WBWscPZEvXqG-ufO48LwnsV32d8Tf0_cnQY1SckdBnQ/exec?" + params.toString())
         .then(res => res.json())
         .then(result => {
           if (result.success && result.status === "aktif") {
