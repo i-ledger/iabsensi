@@ -6,25 +6,21 @@
 </head>
 <body>
   <h2>Dashboard Admin</h2>
+
   <div id="dashboardInfo"></div>
 
   <script>
-    // Mendapatkan parameter email dari URL
     const urlParams = new URLSearchParams(window.location.search);
     const email = urlParams.get('email');
 
     if (email) {
-      // Fetch request untuk mendapatkan info admin dari email
-      const params = new URLSearchParams();
-      params.append("email", email);
-
-      fetch("https://script.google.com/macros/s/AKfycbz3pdV6fDeEg_m04UkFterb0qOQg6FAqIqtSZxmPmoud1ocp_DpGyeGROrxcGofuJW-cA/exec" + params.toString())
+      fetch("https://script.google.com/macros/s/AKfycbyR70DuI0KnQcGs3oE4DSelJ0EX2WD0J-mgzP3ysuPSBmdaocI6exs-ECtou68XoQBVjg/exec?email=" + encodeURIComponent(email))
         .then(res => res.json())
         .then(result => {
           if (result.success && result.status === "aktif") {
             document.getElementById("dashboardInfo").innerText = "Selamat datang, " + email + ". Status akun Anda aktif!";
           } else {
-            document.getElementById("dashboardInfo").innerText = "Akun Anda sudah expired.";
+            document.getElementById("dashboardInfo").innerText = "Akun Anda sudah expired atau belum aktif.";
           }
         })
         .catch(err => {
