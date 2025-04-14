@@ -2,24 +2,106 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Registrasi Admin</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #e63946, #1d3557);
+      color: white;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background-color: white;
+      color: #333;
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 1.5rem;
+      color: #e63946;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    button {
+      background-color: #1d3557;
+      color: white;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    button:hover {
+      background-color: #457b9d;
+    }
+
+    #status {
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+
+    .spinner {
+      display: none;
+      margin: 10px auto;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #e63946;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
 </head>
 <body>
-  <h2>Registrasi Admin</h2>
-  <form id="registerForm">
-    <input type="text" name="nama" placeholder="Nama Admin" required><br><br>
-    <input type="email" name="email" placeholder="Email Admin" required><br><br>
-    <input type="text" name="perusahaan" placeholder="Nama PT / Perusahaan" required><br><br>
-    <input type="text" name="rekening" placeholder="Rekening untuk verifikasi pembayaran" required><br><br>
-    <input type="password" name="password" placeholder="Password" required><br><br>
-    <button type="submit">Daftar</button>
-  </form>
-
-  <div id="status"></div>
+  <div class="container">
+    <h2>Registrasi Admin</h2>
+    <form id="registerForm">
+      <input type="text" name="nama" placeholder="Nama Admin" required>
+      <input type="email" name="email" placeholder="Email Admin" required>
+      <input type="text" name="perusahaan" placeholder="Nama PT / Perusahaan" required>
+      <input type="text" name="rekening" placeholder="Rekening untuk verifikasi pembayaran" required>
+      <input type="password" name="password" placeholder="Password" required>
+      <button type="submit">Daftar</button>
+    </form>
+    <div class="spinner" id="spinner"></div>
+    <div id="status"></div>
+  </div>
 
   <script>
     document.getElementById("registerForm").addEventListener("submit", function(e) {
       e.preventDefault();
+
+      const spinner = document.getElementById("spinner");
+      const statusDiv = document.getElementById("status");
+      spinner.style.display = "block";
+      statusDiv.innerText = "";
 
       const formData = new FormData(this);
       const params = new URLSearchParams();
@@ -32,14 +114,19 @@
 
       fetch("https://script.google.com/macros/s/AKfycbyiIpuYUpIv41PBgqDYA6ruQh3tyW5SmgG71hSVrCTvcglPLDTPm46d1L28yLR6iEeNnw/exec", {
         method: "POST",
-        body: params
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: params.toString()
       })
       .then(res => res.json())
       .then(result => {
-        document.getElementById("status").innerText = result.message;
+        spinner.style.display = "none";
+        statusDiv.innerText = result.message;
       })
       .catch(err => {
-        document.getElementById("status").innerText = "Gagal: " + err.message;
+        spinner.style.display = "none";
+        statusDiv.innerText = "Gagal: " + err.message;
       });
     });
   </script>
