@@ -3,14 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <title>Registrasi Admin</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      margin: 5px 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    #status {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
   <h2>Registrasi Admin</h2>
   <form id="registerForm">
-    <input type="text" name="nama" placeholder="Nama Admin" required><br><br>
-    <input type="email" name="email" placeholder="Email Admin" required><br><br>
-    <input type="text" name="perusahaan" placeholder="Nama PT / Perusahaan" required><br><br>
-    <input type="text" name="rekening" placeholder="Rekening untuk verifikasi pembayaran" required><br><br>
+    <input type="text" name="nama" placeholder="Nama Admin" required><br>
+    <input type="email" name="email" placeholder="Email Admin" required><br>
+    <input type="text" name="perusahaan" placeholder="Nama PT / Perusahaan" required><br>
+    <input type="text" name="rekening" placeholder="Rekening untuk verifikasi pembayaran" required><br>
     <button type="submit">Daftar</button>
   </form>
 
@@ -29,10 +52,9 @@
         rekening: formData.get("rekening")
       };
 
-      // Log data yang akan dikirim untuk debugging
-      console.log("Data yang dikirim:", data);
+      console.log("Mengirim data:", data);
 
-      fetch("https://script.google.com/macros/s/AKfycbywl72gzPIM0lJa-HMK2NJT7mEfUk_r6giejbjpGtJngZ8n8OzNLl7KmuCnvNMUd6jOOg/exec", {
+      fetch("https://script.google.com/macros/s/AKfycby22G2p5TzJylYcGhCrk3Mig-fVin9cLL75QhXd1zKY9o--s1onn2vZOG4pF6dfASTCeQ/exec", {
         method: "POST",
         body: JSON.stringify(data),
         headers: {
@@ -41,14 +63,10 @@
       })
       .then(res => res.json())
       .then(result => {
-        // Log hasil respon untuk debugging
-        console.log("Respon dari server:", result);
-        
         document.getElementById("status").innerText = result.message;
       })
       .catch(error => {
-        // Log error jika terjadi kesalahan
-        console.error("Terjadi kesalahan:", error);
+        console.error("Gagal kirim:", error);
         document.getElementById("status").innerText = "Terjadi kesalahan. Silakan coba lagi.";
       });
     });
