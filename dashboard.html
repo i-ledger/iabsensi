@@ -14,7 +14,7 @@
     const email = urlParams.get('email');
 
     if (email) {
-      fetch("https://script.google.com/macros/s/AKfycbyR70DuI0KnQcGs3oE4DSelJ0EX2WD0J-mgzP3ysuPSBmdaocI6exs-ECtou68XoQBVjg/exec?email=" + encodeURIComponent(email))
+      fetch("https://script.google.com/macros/s/AKfycbyShne3WRjTG6MdSsnU5b85EA6V3n_h_P59Y-8ADu1yqKgdy6Xqfw6jOmWCQCm27pn3Og/exec?email=" + encodeURIComponent(email))
         .then(res => res.json())
         .then(result => {
           if (result.success && result.status === "aktif") {
