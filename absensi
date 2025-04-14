@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Absensi Admin</title>
+  <style>
+    /* Tambahkan styling sesuai kebutuhan */
+  </style>
+</head>
+<body>
+  <h2>Absensi Karyawan</h2>
+  <div id="absensi"></div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const email = params.get("email");
+
+    if (!email) {
+      document.getElementById("absensi").innerText = "Email tidak ditemukan di URL.";
+    } else {
+      fetch(`https://script.google.com/macros/s/AKfycbzCXREhvRS1ZeovHdIYHDdnMPqSYAbOAaZ_a9baW2IGxMXHug62JpS7u6nJsEFtwxwsbw/exec?action=get_absensi&email=${email}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            const absensi = data.data;
+            let absensiList = "<table border='1'><tr><th>Nama</th><th>Lokasi</th><th>Foto</th><th>Status</th></tr>";
+
+            absensi.forEach(row => {
+              absensiList += `<tr>
+                                <td>${row[1]}</td>
+                                <td>${row[2]}</td>
+                                <td><img src="${row[3]}" alt="Foto" width="50"></td>
+                                <td>${row[5]}</td>
+                              </tr>`;
+            });
+            absensiList += "</table>";
+            document.getElementById("absensi").innerHTML = absensiList;
+          } else {
+            document.getElementById("absensi").innerText = data.message;
+          }
+        })
+        .catch(err => {
+          document.getElementById("absensi").innerText = "Gagal mengambil data: " + err.message;
+        });
+    }
+  </script>
+</body>
+</html>
