@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Registrasi</title>
+  <title>Registrasi Admin</title>
 </head>
 <body>
   <h2>Registrasi Admin</h2>
@@ -14,21 +14,22 @@
     <button type="submit">Daftar</button>
   </form>
 
-  <p id="status"></p>
+  <div id="status"></div>
 
   <script>
     document.getElementById("registerForm").addEventListener("submit", function(e) {
       e.preventDefault();
-      const form = e.target;
+
+      const formData = new FormData(this);
       const data = {
         action: "register",
-        nama: form.nama.value,
-        email: form.email.value,
-        perusahaan: form.perusahaan.value,
-        rekening: form.rekening.value
+        nama: formData.get("nama"),
+        email: formData.get("email"),
+        perusahaan: formData.get("perusahaan"),
+        rekening: formData.get("rekening")
       };
 
-      fetch("https://script.google.com/macros/s/AKfycbx6faD95AOrwyFFp7qK8wEuynxTXyWkRPGpe_GXKIHtPeCOopjDAAhRHxpPK-19WF-KaQ/exec", {
+      fetch("https://script.google.com/macros/s/AKfycbw9-iaVLQFzkUp_ypWd52ZxINgmjQMo2YdwK8mUtdnFd7KotPTARLTTPZKf0AUerh_EyA/exec", {
         method: "POST",
         body: JSON.stringify(data),
         headers: {
@@ -39,8 +40,8 @@
       .then(result => {
         document.getElementById("status").innerText = result.message;
       })
-      .catch(error => {
-        document.getElementById("status").innerText = "Terjadi kesalahan: " + error.message;
+      .catch(err => {
+        document.getElementById("status").innerText = "Gagal: " + err.message;
       });
     });
   </script>
