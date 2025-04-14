@@ -39,12 +39,31 @@
       color: green;
       font-weight: bold;
     }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 15px;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>Dashboard Admin</h2>
     <div id="info"></div>
+    <!-- Link ke halaman absensi -->
+    <a id="absensiLink" href="#" style="display:none;">
+      <button>Ke Halaman Absensi</button>
+    </a>
   </div>
 
   <script>
@@ -68,6 +87,10 @@
               <p><strong>Aktif sejak:</strong> ${activatedAt}</p>
               <p><strong>Sisa hari aktif:</strong> ${sisaHari} hari</p>
             `;
+            // Menampilkan tombol menuju halaman absensi
+            const absensiLink = document.getElementById("absensiLink");
+            absensiLink.href = `absensi.html?email=${email}`; // Kirim email ke absensi
+            absensiLink.style.display = "inline"; // Tampilkan tombol
           } else {
             document.getElementById("info").innerText = data.message;
           }
