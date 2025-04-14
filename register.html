@@ -29,7 +29,10 @@
         rekening: formData.get("rekening")
       };
 
-      fetch("https://script.google.com/macros/s/AKfycbwqhix8RhKjwH3B8IrNk6jawGjMglxN9_sKx6dDfsCwZ3f9jH28DLLIdp68tre3ovTjkQ/exec", {
+      // Log data yang akan dikirim untuk debugging
+      console.log("Data yang dikirim:", data);
+
+      fetch("https://script.google.com/macros/s/AKfycbyaI3QU8WvK3lsk4HKcw-LHI7k6r6tuDgNQPpDmFPs3EAE24PbDxhIOwQPJW7QlRbDN/exec", {
         method: "POST",
         body: JSON.stringify(data),
         headers: {
@@ -38,7 +41,15 @@
       })
       .then(res => res.json())
       .then(result => {
+        // Log hasil respon untuk debugging
+        console.log("Respon dari server:", result);
+        
         document.getElementById("status").innerText = result.message;
+      })
+      .catch(error => {
+        // Log error jika terjadi kesalahan
+        console.error("Terjadi kesalahan:", error);
+        document.getElementById("status").innerText = "Terjadi kesalahan. Silakan coba lagi.";
       });
     });
   </script>
