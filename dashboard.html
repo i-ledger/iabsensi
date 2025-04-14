@@ -14,20 +14,17 @@
     const email = urlParams.get('email');
 
     if (email) {
-      // Membuat URL request untuk mendapatkan status akun admin dari Google Apps Script
-      const apiUrl = `https://script.google.com/macros/s/AKfycby49racBkClV3xOVv1tfxKS4vojCjiImeFetm-qYByVSvwV3klUXHAOjtpd5QPxAjEvyw/exec?email=${encodeURIComponent(email)}`;
+      // Fetch request untuk mendapatkan info admin dari email
+      const params = new URLSearchParams();
+      params.append("email", email);
 
-      fetch(apiUrl)
+      fetch("https://script.google.com/macros/s/AKfycbwkcZUi0lHDqpdGv4pbgPhFBzgjZe241SN6O8EnNDC_jQkk6grXFAfDYewgWNyKpW4mag/exec?" + params.toString())
         .then(res => res.json())
         .then(result => {
-          if (result.success) {
-            if (result.status === "aktif") {
-              document.getElementById("dashboardInfo").innerText = `Selamat datang, ${email}. Status akun Anda aktif!`;
-            } else {
-              document.getElementById("dashboardInfo").innerText = "Akun Anda sudah expired.";
-            }
+          if (result.success && result.status === "aktif") {
+            document.getElementById("dashboardInfo").innerText = "Selamat datang, " + email + ". Status akun Anda aktif!";
           } else {
-            document.getElementById("dashboardInfo").innerText = result.message || "Terjadi kesalahan.";
+            document.getElementById("dashboardInfo").innerText = "Akun Anda sudah expired.";
           }
         })
         .catch(err => {
