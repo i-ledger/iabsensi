@@ -21,7 +21,7 @@
         .then(res => res.json())
         .then(result => {
           if (result.success && result.status === "aktif") {
-            localStorage.setItem("adminEmail", email);
+            localStorage.setItem("Email", email);
             window.location.href = "dashboard.html";
           } else if (result.status === "expired") {
             document.getElementById("status").innerText = "Akun Anda sudah expired. Silakan perpanjang.";
