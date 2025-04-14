@@ -5,15 +5,31 @@
   <title>Dashboard Admin</title>
 </head>
 <body>
-  <h2>Selamat datang, Admin</h2>
-  <p id="infoAdmin"></p>
+  <h2>Dashboard Admin</h2>
+
+  <div id="dashboardInfo"></div>
 
   <script>
-    const email = localStorage.getItem("adminEmail");
-    if (!email) {
-      window.location.href = "login.html";
+    // Mendapatkan parameter email dari URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const email = urlParams.get('email');
+
+    if (email) {
+      // Fetch request untuk mendapatkan info admin dari email
+      fetch("https://script.google.com/macros/s/AKfycbxvkdhHAPv0cAi4D2QEeqyCl0zYWL3QV7v-H4MgTm-ZbUov7PtmHI5rLncKiPcvw60KDg/exec?email=" + encodeURIComponent(email))
+        .then(res => res.json())
+        .then(result => {
+          if (result.success && result.status === "aktif") {
+            document.getElementById("dashboardInfo").innerText = "Selamat datang, " + email + ". Status akun Anda aktif!";
+          } else {
+            document.getElementById("dashboardInfo").innerText = "Akun Anda sudah expired.";
+          }
+        })
+        .catch(err => {
+          document.getElementById("dashboardInfo").innerText = "Terjadi kesalahan: " + err.message;
+        });
     } else {
-      document.getElementById("infoAdmin").innerText = "Login sebagai: " + email;
+      document.getElementById("dashboardInfo").innerText = "Email tidak ditemukan.";
     }
   </script>
 </body>
