@@ -54,7 +54,7 @@
     if (!email) {
       document.getElementById("info").innerText = "Email tidak ditemukan di URL.";
     } else {
-      fetch(`https://script.google.com/macros/s/AKfycbyDeDeUEpP0s1Y8d4Gr3b2u3hSXTNUfEGEpJX3WeHUlj7b0xtoKPhS-mrFhNaUnfHQyqg/exec?action=get_admin_info&email=${email}`)
+      fetch(`https://script.google.com/macros/s/AKfycbzCXREhvRS1ZeovHdIYHDdnMPqSYAbOAaZ_a9baW2IGxMXHug62JpS7u6nJsEFtwxwsbw/exec?action=get_admin_info&email=${email}`)
         .then(res => res.json())
         .then(data => {
           if (data.success) {
