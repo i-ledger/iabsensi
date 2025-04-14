@@ -2,101 +2,129 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Dashboard Admin</title>
   <style>
     body {
-      font-family: sans-serif;
-      background-color: #f4f4f4;
-      padding: 20px;
-      color: #333;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #2a9d8f, #264653);
+      color: white;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
     }
 
-    .card {
-      background: white;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    .container {
+      background-color: white;
+      color: #333;
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      width: 90%;
       max-width: 500px;
-      margin: auto;
+      text-align: center;
     }
 
     h2 {
-      color: #1d3557;
+      color: #2a9d8f;
+      margin-bottom: 1.5rem;
     }
 
-    .status {
+    .info {
+      margin: 10px 0;
+      text-align: left;
+    }
+
+    .info span {
       font-weight: bold;
     }
 
     .expired {
       color: red;
+      font-weight: bold;
     }
 
-    .aktif {
+    .active {
       color: green;
+      font-weight: bold;
     }
 
-    #perpanjang {
-      background: #e63946;
+    .buttons {
+      margin-top: 2rem;
+    }
+
+    button {
+      background-color: #2a9d8f;
       color: white;
-      padding: 10px 16px;
       border: none;
+      padding: 10px 16px;
       border-radius: 8px;
       cursor: pointer;
-      margin-top: 16px;
+      font-size: 1rem;
+      margin: 0 8px;
     }
 
-    #perpanjang:hover {
-      background: #c12736;
+    button:hover {
+      background-color: #21867a;
     }
   </style>
 </head>
 <body>
-  <div class="card">
+  <div class="container">
     <h2>Dashboard Admin</h2>
-    <p><strong>Nama:</strong> <span id="nama"></span></p>
-    <p><strong>Email:</strong> <span id="email"></span></p>
-    <p><strong>Status:</strong> <span class="status" id="status"></span></p>
-    <p><strong>Aktif Sejak:</strong> <span id="activatedAt"></span></p>
-    <p><strong>Expired Pada:</strong> <span id="expiredAt"></span></p>
-    <button id="perpanjang" style="display:none;">Perpanjang Sekarang</button>
+    <div class="info"><span>Nama:</span> <span id="nama"></span></div>
+    <div class="info"><span>Email:</span> <span id="email"></span></div>
+    <div class="info"><span>Perusahaan:</span> <span id="perusahaan"></span></div>
+    <div class="info"><span>Status:</span> <span id="status"></span></div>
+    <div class="info"><span>Aktif Sejak:</span> <span id="activatedAt"></span></div>
+    <div class="info"><span>Dibuat Pada:</span> <span id="createdAt"></span></div>
+    <div class="info"><span>Sisa Masa Aktif:</span> <span id="sisaHari"></span> hari</div>
+
+    <div class="buttons">
+      <button onclick="logout()">Logout</button>
+      <button onclick="perpanjang()">Perpanjang Sekarang</button>
+    </div>
   </div>
 
   <script>
-    const email = new URLSearchParams(window.location.search).get("email");
+    const urlParams = new URLSearchParams(window.location.search);
+    const email = urlParams.get("email");
+
     if (!email) {
-      alert("Email tidak ditemukan di URL!");
+      alert("Email tidak ditemukan di URL.");
+    } else {
+      fetch(`https://script.google.com/macros/s/AKfycbwFjghfhbDOIQv1ZGat1cqP1V0hHtnWsAyLC3lNEtiPWhY2D_Vw8GyFLmvkb3iDEudK4g/exec?email=${encodeURIComponent(email)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            document.getElementById("nama").innerText = data.nama;
+            document.getElementById("email").innerText = email;
+            document.getElementById("perusahaan").innerText = data.perusahaan;
+            document.getElementById("status").innerHTML = data.status === "expired"
+              ? `<span class="expired">${data.status}</span>`
+              : `<span class="active">${data.status}</span>`;
+            document.getElementById("activatedAt").innerText = data.activatedAt || "-";
+            document.getElementById("createdAt").innerText = data.createdAt || "-";
+            document.getElementById("sisaHari").innerText = data.sisaHari || "0";
+          } else {
+            alert(data.message);
+          }
+        })
+        .catch(err => {
+          alert("Gagal mengambil data: " + err.message);
+        });
+    }
+
+    function logout() {
       window.location.href = "login.html";
     }
 
-    fetch("https://script.google.com/macros/s/AKfycbwV0wCoxRm11fKo5Ch1fvJsePcEy0Ov92x9E7fjFe7ZS0WSAr9JrpMziuVq8rnh8tI9UQ/exec?email=" + encodeURIComponent(email))
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          document.getElementById("nama").textContent = data.nama || "-";
-          document.getElementById("email").textContent = email;
-          document.getElementById("status").textContent = data.status;
-          document.getElementById("status").classList.add(data.status === "Aktif" ? "aktif" : "expired");
-          document.getElementById("activatedAt").textContent = data.activatedAt || "-";
-          
-          // Hitung expired date dari activatedAt
-          if (data.activatedAt) {
-            const activatedDate = new Date(data.activatedAt);
-            const expiredDate = new Date(activatedDate);
-            expiredDate.setDate(expiredDate.getDate() + 30);
-            document.getElementById("expiredAt").textContent = expiredDate.toLocaleDateString("id-ID");
-
-            if (data.status === "Expired") {
-              document.getElementById("perpanjang").style.display = "block";
-              document.getElementById("perpanjang").onclick = () => {
-                alert("Silakan transfer ke rekening 1234567890 a.n PT Anda, lalu hubungi admin untuk aktivasi kembali.");
-              };
-            }
-          }
-        } else {
-          alert(data.message || "Data tidak ditemukan");
-        }
-      });
+    function perpanjang() {
+      window.location.href = `pembayaran.html?email=${encodeURIComponent(email)}`;
+    }
   </script>
 </body>
 </html>
