@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
   <meta charset="UTF-8">
-  <title>Registrasi Admin</title>
+  <title>Registrasi</title>
 </head>
 <body>
   <h2>Registrasi Admin</h2>
@@ -14,22 +14,21 @@
     <button type="submit">Daftar</button>
   </form>
 
-  <div id="status"></div>
+  <p id="status"></p>
 
   <script>
     document.getElementById("registerForm").addEventListener("submit", function(e) {
       e.preventDefault();
-
-      const formData = new FormData(this);
+      const form = e.target;
       const data = {
         action: "register",
-        nama: formData.get("nama"),
-        email: formData.get("email"),
-        perusahaan: formData.get("perusahaan"),
-        rekening: formData.get("rekening")
+        nama: form.nama.value,
+        email: form.email.value,
+        perusahaan: form.perusahaan.value,
+        rekening: form.rekening.value
       };
 
-      fetch("https://script.google.com/macros/s/AKfycbwrm0eESmwfKpsQ-_Ijw-VLIVzp5Dwu9rvSXyyZltTbE-ckUM4nDkYjCBV6-yLQghklrw/exec", {
+      fetch("https://script.google.com/macros/s/AKfycbwqhix8RhKjwH3B8IrNk6jawGjMglxN9_sKx6dDfsCwZ3f9jH28DLLIdp68tre3ovTjkQ/exec", {
         method: "POST",
         body: JSON.stringify(data),
         headers: {
