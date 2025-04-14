@@ -1,85 +1,46 @@
-// Google Apps Script: Verifikasi pembayaran, registrasi admin, dan aktivasi masa aktif
-function doPost(e) {
-  const ss = SpreadsheetApp.openById("ID_SPREADSHEET_KAMU");
-  const sheet = ss.getSheetByName("Admin");
-  const data = JSON.parse(e.postData.contents);
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Registrasi Admin</title>
+</head>
+<body>
+  <h2>Registrasi Admin</h2>
+  <form id="registerForm">
+    <input type="text" name="nama" placeholder="Nama Admin" required><br><br>
+    <input type="email" name="email" placeholder="Email Admin" required><br><br>
+    <input type="text" name="perusahaan" placeholder="Nama PT / Perusahaan" required><br><br>
+    <input type="text" name="rekening" placeholder="Rekening untuk verifikasi pembayaran" required><br><br>
+    <button type="submit">Daftar</button>
+  </form>
 
-  const email = data.email;
-  const action = data.action;
+  <div id="status"></div>
 
-  if (action === "register") {
-    const nama = data.nama;
-    const perusahaan = data.perusahaan;
-    const rekening = data.rekening;
-    const now = new Date();
+  <script>
+    document.getElementById("registerForm").addEventListener("submit", function(e) {
+      e.preventDefault();
 
-    // Tambah data ke sheet
-    sheet.appendRow([nama, email, perusahaan, rekening, "belum bayar", "", now]);
-    return ContentService.createTextOutput(JSON.stringify({ success: true, message: "Pendaftaran berhasil. Silakan lakukan pembayaran." }))
-          .setMimeType(ContentService.MimeType.JSON);
-  }
+      const formData = new FormData(this);
+      const data = {
+        action: "register",
+        nama: formData.get("nama"),
+        email: formData.get("email"),
+        perusahaan: formData.get("perusahaan"),
+        rekening: formData.get("rekening")
+      };
 
-  if (action === "verifyPayment") {
-    const rows = sheet.getDataRange().getValues();
-    const header = rows[0];
-    const emailCol = header.indexOf("Email");
-    const statusCol = header.indexOf("Status");
-    const activatedAtCol = header.indexOf("ActivatedAt");
-
-    for (let i = 1; i < rows.length; i++) {
-      if (rows[i][emailCol] === email) {
-        const now = new Date();
-        sheet.getRange(i + 1, statusCol + 1).setValue("aktif");
-        sheet.getRange(i + 1, activatedAtCol + 1).setValue(now);
-
-        return ContentService.createTextOutput(JSON.stringify({ success: true, message: "Akun diaktifkan." }))
-              .setMimeType(ContentService.MimeType.JSON);
-      }
-    }
-
-    return ContentService.createTextOutput(JSON.stringify({ success: false, message: "Email tidak ditemukan." }))
-          .setMimeType(ContentService.MimeType.JSON);
-  }
-
-  return ContentService.createTextOutput(JSON.stringify({ success: false, message: "Aksi tidak dikenal." }))
-        .setMimeType(ContentService.MimeType.JSON);
-}
-
-// Fungsi GET untuk cek status akun dan masa aktif
-function doGet(e) {
-  const ss = SpreadsheetApp.openById("ID_SPREADSHEET_KAMU");
-  const sheet = ss.getSheetByName("Admin");
-
-  const email = e.parameter.email;
-  const rows = sheet.getDataRange().getValues();
-  const header = rows[0];
-  const emailCol = header.indexOf("Email");
-  const statusCol = header.indexOf("Status");
-  const activatedAtCol = header.indexOf("ActivatedAt");
-
-  for (let i = 1; i < rows.length; i++) {
-    if (rows[i][emailCol] === email) {
-      let status = rows[i][statusCol];
-      const activatedAt = new Date(rows[i][activatedAtCol]);
-
-      const now = new Date();
-      const selisihHari = Math.floor((now - activatedAt) / (1000 * 60 * 60 * 24));
-
-      if (selisihHari > 30) {
-        sheet.getRange(i + 1, statusCol + 1).setValue("expired");
-        status = "expired";
-      }
-
-      return ContentService.createTextOutput(JSON.stringify({
-        email: email,
-        status: status,
-        daysActive: selisihHari
-      })).setMimeType(ContentService.MimeType.JSON);
-    }
-  }
-
-  return ContentService.createTextOutput(JSON.stringify({
-    success: false,
-    message: "Email tidak ditemukan"
-  })).setMimeType(ContentService.MimeType.JSON);
-}
+      fetch("https://script.google.com/macros/s/ID_SCRIPT_KAMU/exec", {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+      .then(res => res.json())
+      .then(result => {
+        document.getElementById("status").innerText = result.message;
+      });
+    });
+  </script>
+</body>
+</html>
