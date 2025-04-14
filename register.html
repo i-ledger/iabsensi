@@ -3,37 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <title>Registrasi Admin</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-    }
-    input, button {
-      padding: 10px;
-      font-size: 16px;
-      margin: 5px 0;
-      width: 100%;
-      box-sizing: border-box;
-    }
-    button {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    #status {
-      margin-top: 15px;
-      font-weight: bold;
-    }
-  </style>
 </head>
 <body>
   <h2>Registrasi Admin</h2>
   <form id="registerForm">
-    <input type="text" name="nama" placeholder="Nama Admin" required><br>
-    <input type="email" name="email" placeholder="Email Admin" required><br>
-    <input type="text" name="perusahaan" placeholder="Nama PT / Perusahaan" required><br>
-    <input type="text" name="rekening" placeholder="Rekening untuk verifikasi pembayaran" required><br>
+    <input type="text" name="nama" placeholder="Nama Admin" required><br><br>
+    <input type="email" name="email" placeholder="Email Admin" required><br><br>
+    <input type="text" name="perusahaan" placeholder="Nama PT / Perusahaan" required><br><br>
+    <input type="text" name="rekening" placeholder="Rekening untuk verifikasi pembayaran" required><br><br>
     <button type="submit">Daftar</button>
   </form>
 
@@ -52,9 +29,7 @@
         rekening: formData.get("rekening")
       };
 
-      console.log("Mengirim data:", data);
-
-      fetch("https://script.google.com/macros/s/AKfycbyHVdg6eRIlrSvAhVVFAMBqQzchKBG3-jNDSpwA_C0Zn8fRIgmpwoqTy7K1siEAO1xFlQ/exec", {
+      fetch("https://script.google.com/macros/s/AKfycby1fr_8VdOTdtzoG2Pomy31drneP_SzASL1pGJUqzxQNiV5MH7Ja6epwJgOBo5E2JAb5g/exec", {
         method: "POST",
         body: JSON.stringify(data),
         headers: {
@@ -66,8 +41,7 @@
         document.getElementById("status").innerText = result.message;
       })
       .catch(error => {
-        console.error("Gagal kirim:", error);
-        document.getElementById("status").innerText = "Terjadi kesalahan. Silakan coba lagi.";
+        document.getElementById("status").innerText = "Terjadi kesalahan: " + error.message;
       });
     });
   </script>
