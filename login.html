@@ -17,7 +17,7 @@
       e.preventDefault();
       const email = this.email.value;
 
-      fetch(`https://script.google.com/macros/s/AKfycbzkmTAvkL4OA0-Z3i4ZNO62cU8vVDIGL1MZ0Pz1FPbgbnCB4fTeojtBmo4mc3DfQBBnyw/exec?email=${encodeURIComponent(email)}`)
+      fetch(`https://script.google.com/macros/s/AKfycbxvkdhHAPv0cAi4D2QEeqyCl0zYWL3QV7v-H4MgTm-ZbUov7PtmHI5rLncKiPcvw60KDg/exec?email=${encodeURIComponent(email)}`)
         .then(res => res.json())
         .then(result => {
           if (result.success && result.status === "aktif") {
