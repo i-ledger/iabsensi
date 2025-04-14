@@ -119,14 +119,20 @@
         },
         body: params.toString()
       })
-      .then(res => res.json())
-      .then(result => {
+      .then(res => res.text())
+      .then(text => {
         spinner.style.display = "none";
-        statusDiv.innerText = result.message;
+
+        try {
+          const result = JSON.parse(text);
+          statusDiv.innerText = result.message;
+        } catch (e) {
+          statusDiv.innerText = "Gagal membaca respons: " + text;
+        }
       })
       .catch(err => {
         spinner.style.display = "none";
-        statusDiv.innerText = "Gagal: " + err.message;
+        statusDiv.innerText = "Gagal koneksi: " + err.message;
       });
     });
   </script>
